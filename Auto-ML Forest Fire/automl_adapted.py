@@ -2940,4 +2940,5 @@ if __name__ == "__main__":
 
     else:
         parser.print_help()
+
         print("\n[!] Error: You must provide --data (for training) or --predict (for inference).")
