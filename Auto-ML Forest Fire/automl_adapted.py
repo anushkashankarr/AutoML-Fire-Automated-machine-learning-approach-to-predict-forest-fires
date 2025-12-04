@@ -508,7 +508,8 @@ def run_optuna_tuning(X_train, y_train, X_valid, y_valid, is_classifier=True, n_
 
     device = "cuda" if TORCH_AVAILABLE and torch.cuda.is_available() else "cpu"
 
-    model_options = ["rf", "xgb", "lgb", "cat"] if is_classifier else ["rf", "xgb", "lgb", "cat"]
+    model_options = ["rf", "xgb", "lgb", "cat", "dl"] if is_classifier else ["rf", "xgb", "lgb", "cat"]
+    model_options = ["rf", "xgb", "lgb", "cat", "dl"] if is_classifier else ["rf", "xgb", "lgb", "cat"]
     print(f"[OPTUNA] Search candidates = {model_options}")
     print(f"[OPTUNA] DL enabled: {TORCH_AVAILABLE}")
 
@@ -539,10 +540,16 @@ def run_optuna_tuning(X_train, y_train, X_valid, y_valid, is_classifier=True, n_
                 return 1e-6
 
             # ----- build sequences -----
-            Xs_train = torch.tensor(make_sequence(X_train.values, params["seq_len"]), dtype=torch.float32).to(device)
-            Xs_valid = torch.tensor(make_sequence(X_valid.values, params["seq_len"]), dtype=torch.float32).to(device)
-            ys_train = torch.tensor(y_train.values.reshape(-1, 1), dtype=torch.float32).to(device)
-            ys_valid = torch.tensor(y_valid.values.reshape(-1, 1), dtype=torch.float32).to(device)
+            # convert safely regardless of pandas/numpy format
+            X_train_np = X_train if isinstance(X_train, np.ndarray) else X_train.values
+            X_valid_np = X_valid if isinstance(X_valid, np.ndarray) else X_valid.values
+            y_train_np = y_train if isinstance(y_train, np.ndarray) else y_train.values
+            y_valid_np = y_valid if isinstance(y_valid, np.ndarray) else y_valid.values
+
+            Xs_train = torch.tensor(make_sequence(X_train_np, params["seq_len"]), dtype=torch.float32).to(device)
+            Xs_valid = torch.tensor(make_sequence(X_valid_np, params["seq_len"]), dtype=torch.float32).to(device)
+            ys_train = torch.tensor(y_train_np.reshape(-1, 1), dtype=torch.float32).to(device)
+            ys_valid  = torch.tensor(y_valid_np.reshape(-1, 1), dtype=torch.float32).to(device)
 
             smooth = params["label_smooth"]
             ys_train = ys_train * (1 - smooth) + smooth / 2
@@ -2804,95 +2811,76 @@ def resume_leftover_zones(args):
         joblib.dump(registry, reg_path)
 
     print("\n[✓] Resume training finished.")
+
 def main(args):
     print("[i] Starting pipeline…")
-    
-    # 1. Load & Preprocess Data (Must happen in both modes to get zone definitions)
+
+    # 1. Load dataset
     df = load_data(args.data)
     df = engineer_features(df)
-    
-    # 2. Extract Ecozones
+
+    # 2. Ecozone clustering
     df, _, knn_router = extract_ecozones(df, eps=args.eps, min_samples=args.min_samples)
 
-    outdir = args.outdir
+    outdir   = args.outdir
     reg_path = os.path.join(outdir, "models_registry.pkl")
-    
-    # --- RESUME LOGIC  ---
-    completed_zones = set()
-    registry = {}
 
+    # === RESUME / FRESH MODE SIMPLIFIED ===
     if args.resume:
-        print(f"\n[i] 🟡 RESUME MODE DETECTED: Preserving contents of {outdir}")
-        
-        # Try to load existing registry
-        if os.path.exists(reg_path):
-            try:
-                registry = joblib.load(reg_path)
-                print(f"[i] Loaded existing registry with {len(registry)} entries.")
-                
-                # Validation: A zone is only 'done' if it is in registry AND report exists
-                for z in list(registry.keys()):
-                    # Skip non-integer keys like 'centroids'
-                    if not isinstance(z, (int, np.integer)):
-                        continue
-                        
-                    report_path = os.path.join(outdir, f"zone_{z}", "report.html")
-                    if os.path.exists(report_path):
-                        completed_zones.add(z)
-                
-                print(f"[i] Verified {len(completed_zones)} zones already completed.")
-                
-            except Exception as e:
-                print(f"[!] Error loading registry: {e}. Starting fresh registry.")
-                registry = {"centroids": compute_centroids(df)}
-        else:
-            print("[!] No registry found. Creating new one.")
-            registry = {"centroids": compute_centroids(df)}
-            
-    else:
-        # Default: Fresh Start -> Wipe everything
-        print(f"\n[i] 🟢 FRESH START: Cleaning {outdir}...")
-        clean_output_directory(outdir, delete_subfolders=True)
-        registry = {"centroids": compute_centroids(df)}
-    # --- RESUME LOGIC END ---
+        print("\n[i] 🟡 RESUME MODE — Skipping zones with existing report.html")
 
-    # 3. Build Tasks
-    # Note: build_zone_tasks calculates all potential tasks
+        # Load existing registry or make new one
+        if os.path.exists(reg_path):
+            registry = joblib.load(reg_path)
+        else:
+            registry = {}
+
+        completed_zones = set()
+
+        # Detect completed zones *only* using report existence
+        for name in os.listdir(outdir):
+            if name.startswith("zone_"):
+                try:
+                    z = int(name.split("_")[1])
+                except:
+                    continue
+
+                report = os.path.join(outdir, name, "report.html")
+                if os.path.exists(report):
+                    completed_zones.add(z)
+
+        print(f"[i] Detected already completed zones → {sorted(completed_zones)}")
+
+    else:
+        print("\n[i] 🟢 FRESH START — wiping output directory")
+        clean_output_directory(outdir, delete_subfolders=True)
+
+        registry = {}
+        completed_zones = set()
+
+    # 3. Build task list
     all_tasks = build_zone_tasks(df, args, registry, outdir)
 
-    # 4. Filter Tasks (The Critical Step)
-    # Task tuple structure: (df_zone, out_zone, zone_id, args)
-    tasks_to_run = []
-    for t in all_tasks:
-        zone_id = t[2]
-        if zone_id in completed_zones:
-            # Skip if resuming and already done
-            continue
-        tasks_to_run.append(t)
+    tasks_to_run = [t for t in all_tasks if t[2] not in completed_zones]
 
-    print(f"[i] Total Zones: {len(all_tasks)}")
-    print(f"[i] Completed  : {len(completed_zones)}")
-    print(f"[i] Remaining  : {len(tasks_to_run)}")
+    print(f"[i] Total zones: {len(all_tasks)}")
+    print(f"[i] Completed via report.html: {len(completed_zones)}")
+    print(f"[i] Remaining to train: {len(tasks_to_run)}")
 
-    if not tasks_to_run and len(all_tasks) > 0:
-        print("[✓] All zones are already trained. Nothing to do.")
-    else:
-        # 5. Train Remaining Zones
+    # 4. Train remaining ones
+    if tasks_to_run:
         registry = train_all_zones(tasks_to_run, registry, parallel=False)
+    else:
+        print("[✓] Resume mode: nothing to retrain")
 
-    # 6. Finalize (Run this every time to ensure global reports encompass old + new data)
-    print("[i] Updating Global Artifacts (Router, Registry, Reports)...")
-    
-    # Retrain router (fast) to ensure it maps to all zones correctly
+    # 5. Router + Save + Reports
+    print("[i] Updating router + registry + global reports")
+
     train_ecozone_knn(df, outdir)
-
-    # Save Registry
     joblib.dump(registry, reg_path)
 
-    # Generate Reports
     generate_global_reports(registry, outdir)
     plot_india_zones(df, os.path.join(outdir, "india_ecozones.png"))
-
 
     print("[✓] Pipeline completed successfully.")
     
@@ -2940,5 +2928,4 @@ if __name__ == "__main__":
 
     else:
         parser.print_help()
-
         print("\n[!] Error: You must provide --data (for training) or --predict (for inference).")
