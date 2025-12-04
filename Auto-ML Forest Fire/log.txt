@@ -1,0 +1,330 @@
+[i] Starting pipeline…
+[i] load_data: path = dataset.csv
+[i] Raw columns: ['system:index', 'NDVI', 'date', 'fire_detected', 'fire_intensity', 'geometry_json', 'latitude', 'longitude', 'relative_humidity', 'temperature_2m', 'total_precipitation_sum', 'vapor_pressure_deficit', 'volumetric_soil_water_layer_1', 'wind_speed', '.geo']
+[i] Data loaded : shape = (807897, 15)
+[i] After dropping CFG.drop_cols: ['NDVI', 'fire_detected', 'fire_intensity', 'latitude', 'longitude', 'relative_humidity', 'temperature_2m', 'total_precipitation_sum', 'vapor_pressure_deficit', 'volumetric_soil_water_layer_1', 'wind_speed']
+[i] engineer_features: start
+[i] After Feature Engineering columns: ['NDVI', 'fire_detected', 'fire_intensity', 'latitude', 'longitude', 'relative_humidity', 'temperature_2m', 'total_precipitation_sum', 'vapor_pressure_deficit', 'volumetric_soil_water_layer_1', 'wind_speed', 'temp_c', 'ndvi_scaled', 'vpd_wind_idx']
+[i] engineer_features: done : columns = 14
+[i] hybrid clustering (probabilistic routing)...
+[i] KMeans macro clusters = 9
+[i] DBSCAN refined ecozones = 12
+[i] Final ecozone count = 12
+
+[i] 🟢 FRESH START: Cleaning ecozone_results...
+[i] Cleaning previous outputs in: ecozone_results
+[!] Zone 1 is SAFE — no variation
+[i] Generating zone report: ecozone_results\zone_1
+[i] Report written: ecozone_results\zone_1\report.html
+[!] Zone 5 is SAFE — no variation
+[i] Generating zone report: ecozone_results\zone_5
+[i] Report written: ecozone_results\zone_5\report.html
+[!] Zone 6 is SAFE — no variation
+[i] Generating zone report: ecozone_results\zone_6
+[i] Report written: ecozone_results\zone_6\report.html
+[i] Total Zones: 9
+[i] Completed  : 0
+[i] Remaining  : 9
+
+[i] Running SEQUENTIAL ecozone training...
+[i] ---> Running zone 0 sequentially
+
+=== 🔥 TRAINING ECOZONE 0 | 55121 samples ===
+[i] Created output directory: ecozone_results\zone_0
+[✓] Balancing applied using: SMOTEENN
+[i] Train/Test shapes: (44096, 12) (11025, 12)
+
+[✔] Base classifier = LightGBM only. Other models will be tried while Optimising using Optuna
+
+[OPTUNA] Search candidates = ['rf', 'xgb', 'lgb', 'cat']
+[OPTUNA] DL enabled: True
+[OPTUNA] running tuning... patience=5
+  [OPTUNA] Trial 0: NEW BEST rf 0.3625
+[i] Saved figure : ecozone_results\zone_0\roc_curve.png
+[i] Saved figure : ecozone_results\zone_0\classifier_curve.png
+[i] Saved figure : ecozone_results\zone_0\confusion_matrix.png
+[!] SMOGN skipped — target is all NaN after coercion.
+[i] Feature importance ranking written: ecozone_results\zone_0\feature_importance_classifier.csv
+[i] Saved figure : ecozone_results\zone_0\feature_importance_classifier.png
+[i] Feature importance ranking written: ecozone_results\zone_0\feature_importance_regressor.csv
+[i] Saved figure : ecozone_results\zone_0\feature_importance_regressor.png
+[i] Saved figure : ecozone_results\zone_0\shap_summary_classifier.png
+[i] GIS overlay requested → ecozone_results\zone_0\gis_overlay_base.png using 'None'
+[✓] GIS overlay actually saved → ecozone_results\zone_0\gis_overlay_base.png
+[✓] Pretty geo overlay saved → ecozone_results\zone_0/gis_overlay_base.png
+[i] GIS overlay requested → ecozone_results\zone_0\gis_risk_heatmap.png using 'shap_risk'
+[✓] GIS overlay actually saved → ecozone_results\zone_0\gis_risk_heatmap.png
+[✓] SHAP risk heatmap saved → ecozone_results\zone_0/gis_risk_heatmap.png
+[i] Saved zone map: ecozone_results\zone_0\zone_map.png
+[i] Generating zone report: ecozone_results\zone_0
+[i] Report written: ecozone_results\zone_0\report.html
+[i] ---> Running zone 2 sequentially
+
+=== 🔥 TRAINING ECOZONE 2 | 95670 samples ===
+[i] Created output directory: ecozone_results\zone_2
+[✓] Balancing applied using: SMOTEENN
+[i] Train/Test shapes: (76536, 12) (19134, 12)
+
+[✔] Base classifier = LightGBM only. Other models will be tried while Optimising using Optuna
+
+[OPTUNA] Search candidates = ['rf', 'xgb', 'lgb', 'cat']
+[OPTUNA] DL enabled: True
+[OPTUNA] running tuning... patience=5
+  [OPTUNA] Trial 0: NEW BEST lgb 0.5943
+  [OPTUNA] Trial 1: NEW BEST lgb 0.6073
+[i] Saved figure : ecozone_results\zone_2\roc_curve.png
+[i] Saved figure : ecozone_results\zone_2\classifier_curve.png
+[i] Saved figure : ecozone_results\zone_2\confusion_matrix.png
+[!] SMOGN skipped — target is all NaN after coercion.
+[i] Feature importance ranking written: ecozone_results\zone_2\feature_importance_classifier.csv
+[i] Saved figure : ecozone_results\zone_2\feature_importance_classifier.png
+[i] Feature importance ranking written: ecozone_results\zone_2\feature_importance_regressor.csv
+[i] Saved figure : ecozone_results\zone_2\feature_importance_regressor.png
+[i] Saved figure : ecozone_results\zone_2\shap_summary_classifier.png
+[i] GIS overlay requested → ecozone_results\zone_2\gis_overlay_base.png using 'None'
+[✓] GIS overlay actually saved → ecozone_results\zone_2\gis_overlay_base.png
+[✓] Pretty geo overlay saved → ecozone_results\zone_2/gis_overlay_base.png
+[i] GIS overlay requested → ecozone_results\zone_2\gis_risk_heatmap.png using 'shap_risk'
+[✓] GIS overlay actually saved → ecozone_results\zone_2\gis_risk_heatmap.png
+[✓] SHAP risk heatmap saved → ecozone_results\zone_2/gis_risk_heatmap.png
+[i] Saved zone map: ecozone_results\zone_2\zone_map.png
+[i] Generating zone report: ecozone_results\zone_2
+[i] Report written: ecozone_results\zone_2\report.html
+[i] ---> Running zone 3 sequentially
+
+=== 🔥 TRAINING ECOZONE 3 | 110067 samples ===
+[i] Created output directory: ecozone_results\zone_3
+[✓] Balancing applied using: SMOTEENN
+[i] Train/Test shapes: (88053, 12) (22014, 12)
+
+[✔] Base classifier = LightGBM only. Other models will be tried while Optimising using Optuna
+
+[OPTUNA] Search candidates = ['rf', 'xgb', 'lgb', 'cat']
+[OPTUNA] DL enabled: True
+[OPTUNA] running tuning... patience=5
+  [OPTUNA] Trial 0: NEW BEST lgb 0.8581
+  [OPTUNA] Trial 1: NEW BEST rf 0.8614
+  [OPTUNA] Trial 2: NEW BEST xgb 0.8724
+[i] Saved figure : ecozone_results\zone_3\roc_curve.png
+[i] Saved figure : ecozone_results\zone_3\classifier_curve.png
+[i] Saved figure : ecozone_results\zone_3\confusion_matrix.png
+[!] SMOGN skipped — target is all NaN after coercion.
+[i] Feature importance ranking written: ecozone_results\zone_3\feature_importance_classifier.csv
+[i] Saved figure : ecozone_results\zone_3\feature_importance_classifier.png
+[i] Feature importance ranking written: ecozone_results\zone_3\feature_importance_regressor.csv
+[i] Saved figure : ecozone_results\zone_3\feature_importance_regressor.png
+[!] TreeExplainer failed, falling back to approximate SHAP: could not convert string to float: '[5.0691915E-1]'
+[i] Saved figure : ecozone_results\zone_3\shap_summary_classifier.png
+[i] GIS overlay requested → ecozone_results\zone_3\gis_overlay_base.png using 'None'
+[✓] GIS overlay actually saved → ecozone_results\zone_3\gis_overlay_base.png
+[✓] Pretty geo overlay saved → ecozone_results\zone_3/gis_overlay_base.png
+[!] GIS SHAP mapping failed: could not convert string to float: '[5.0691915E-1]'
+[i] Saved zone map: ecozone_results\zone_3\zone_map.png
+[!] Narrative insight generation failed: could not convert string to float: '[5.0691915E-1]'
+[i] Generating zone report: ecozone_results\zone_3
+[i] Report written: ecozone_results\zone_3\report.html
+[i] ---> Running zone 4 sequentially
+
+=== 🔥 TRAINING ECOZONE 4 | 94704 samples ===
+[i] Created output directory: ecozone_results\zone_4
+[✓] Balancing applied using: SMOTEENN
+[i] Train/Test shapes: (75763, 12) (18941, 12)
+
+[✔] Base classifier = LightGBM only. Other models will be tried while Optimising using Optuna
+
+[OPTUNA] Search candidates = ['rf', 'xgb', 'lgb', 'cat']
+[OPTUNA] DL enabled: True
+[OPTUNA] running tuning... patience=5
+  [OPTUNA] Trial 0: NEW BEST xgb 0.4753
+[i] Saved figure : ecozone_results\zone_4\roc_curve.png
+[i] Saved figure : ecozone_results\zone_4\classifier_curve.png
+[i] Saved figure : ecozone_results\zone_4\confusion_matrix.png
+[!] SMOGN failed — fallback to original: redefine phi relevance function: all points are 0
+[i] Feature importance ranking written: ecozone_results\zone_4\feature_importance_classifier.csv
+[i] Saved figure : ecozone_results\zone_4\feature_importance_classifier.png
+[i] Feature importance ranking written: ecozone_results\zone_4\feature_importance_regressor.csv
+[i] Saved figure : ecozone_results\zone_4\feature_importance_regressor.png
+[!] TreeExplainer failed, falling back to approximate SHAP: could not convert string to float: '[5.0917155E-1]'
+[i] Saved figure : ecozone_results\zone_4\shap_summary_classifier.png
+[i] GIS overlay requested → ecozone_results\zone_4\gis_overlay_base.png using 'None'
+[✓] GIS overlay actually saved → ecozone_results\zone_4\gis_overlay_base.png
+[✓] Pretty geo overlay saved → ecozone_results\zone_4/gis_overlay_base.png
+[!] GIS SHAP mapping failed: could not convert string to float: '[5.0917155E-1]'
+[i] Saved zone map: ecozone_results\zone_4\zone_map.png
+[!] Narrative insight generation failed: could not convert string to float: '[5.0917155E-1]'
+[i] Generating zone report: ecozone_results\zone_4
+[i] Report written: ecozone_results\zone_4\report.html
+[i] ---> Running zone 7 sequentially
+
+=== 🔥 TRAINING ECOZONE 7 | 80224 samples ===
+[i] Created output directory: ecozone_results\zone_7
+[✓] Balancing applied using: SMOTEENN
+[i] Train/Test shapes: (64179, 12) (16045, 12)
+
+[✔] Base classifier = LightGBM only. Other models will be tried while Optimising using Optuna
+
+[OPTUNA] Search candidates = ['rf', 'xgb', 'lgb', 'cat']
+[OPTUNA] DL enabled: True
+[OPTUNA] running tuning... patience=5
+  [OPTUNA] Trial 0: NEW BEST rf 0.5096
+[i] Saved figure : ecozone_results\zone_7\roc_curve.png
+[i] Saved figure : ecozone_results\zone_7\classifier_curve.png
+[i] Saved figure : ecozone_results\zone_7\confusion_matrix.png
+[!] SMOGN skipped — target is all NaN after coercion.
+[i] Feature importance ranking written: ecozone_results\zone_7\feature_importance_classifier.csv
+[i] Saved figure : ecozone_results\zone_7\feature_importance_classifier.png
+[i] Feature importance ranking written: ecozone_results\zone_7\feature_importance_regressor.csv
+[i] Saved figure : ecozone_results\zone_7\feature_importance_regressor.png
+[i] Saved figure : ecozone_results\zone_7\shap_summary_classifier.png
+[i] GIS overlay requested → ecozone_results\zone_7\gis_overlay_base.png using 'None'
+[✓] GIS overlay actually saved → ecozone_results\zone_7\gis_overlay_base.png
+[✓] Pretty geo overlay saved → ecozone_results\zone_7/gis_overlay_base.png
+[i] GIS overlay requested → ecozone_results\zone_7\gis_risk_heatmap.png using 'shap_risk'
+[✓] GIS overlay actually saved → ecozone_results\zone_7\gis_risk_heatmap.png
+[✓] SHAP risk heatmap saved → ecozone_results\zone_7/gis_risk_heatmap.png
+[i] Saved zone map: ecozone_results\zone_7\zone_map.png
+[i] Generating zone report: ecozone_results\zone_7
+[i] Report written: ecozone_results\zone_7\report.html
+[i] ---> Running zone 8 sequentially
+
+=== 🔥 TRAINING ECOZONE 8 | 91878 samples ===
+[i] Created output directory: ecozone_results\zone_8
+[✓] Balancing applied using: SMOTEENN
+[i] Train/Test shapes: (73502, 12) (18376, 12)
+
+[✔] Base classifier = LightGBM only. Other models will be tried while Optimising using Optuna
+
+[OPTUNA] Search candidates = ['rf', 'xgb', 'lgb', 'cat']
+[OPTUNA] DL enabled: True
+[OPTUNA] running tuning... patience=5
+  [OPTUNA] Trial 0: NEW BEST xgb 0.5542
+  [OPTUNA] Trial 1: NEW BEST rf 0.6158
+[i] Saved figure : ecozone_results\zone_8\roc_curve.png
+[i] Saved figure : ecozone_results\zone_8\classifier_curve.png
+[i] Saved figure : ecozone_results\zone_8\confusion_matrix.png
+[!] SMOGN skipped — target is all NaN after coercion.
+[i] Feature importance ranking written: ecozone_results\zone_8\feature_importance_classifier.csv
+[i] Saved figure : ecozone_results\zone_8\feature_importance_classifier.png
+[i] Feature importance ranking written: ecozone_results\zone_8\feature_importance_regressor.csv
+[i] Saved figure : ecozone_results\zone_8\feature_importance_regressor.png
+[i] Saved figure : ecozone_results\zone_8\shap_summary_classifier.png
+[i] GIS overlay requested → ecozone_results\zone_8\gis_overlay_base.png using 'None'
+[✓] GIS overlay actually saved → ecozone_results\zone_8\gis_overlay_base.png
+[✓] Pretty geo overlay saved → ecozone_results\zone_8/gis_overlay_base.png
+[i] GIS overlay requested → ecozone_results\zone_8\gis_risk_heatmap.png using 'shap_risk'
+[✓] GIS overlay actually saved → ecozone_results\zone_8\gis_risk_heatmap.png
+[✓] SHAP risk heatmap saved → ecozone_results\zone_8/gis_risk_heatmap.png
+[i] Saved zone map: ecozone_results\zone_8\zone_map.png
+[i] Generating zone report: ecozone_results\zone_8
+[i] Report written: ecozone_results\zone_8\report.html
+[i] ---> Running zone 9 sequentially
+
+=== 🔥 TRAINING ECOZONE 9 | 92511 samples ===
+[i] Created output directory: ecozone_results\zone_9
+[✓] Balancing applied using: SMOTEENN
+[i] Train/Test shapes: (74008, 12) (18503, 12)
+
+[✔] Base classifier = LightGBM only. Other models will be tried while Optimising using Optuna
+
+[OPTUNA] Search candidates = ['rf', 'xgb', 'lgb', 'cat']
+[OPTUNA] DL enabled: True
+[OPTUNA] running tuning... patience=5
+  [OPTUNA] Trial 0: NEW BEST lgb 0.1249
+  [OPTUNA] Trial 1: NEW BEST cat 0.2979
+[i] Saved figure : ecozone_results\zone_9\roc_curve.png
+[i] Saved figure : ecozone_results\zone_9\classifier_curve.png
+[i] Saved figure : ecozone_results\zone_9\confusion_matrix.png
+[!] SMOGN failed — fallback to original: redefine phi relevance function: all points are 1
+[i] Feature importance ranking written: ecozone_results\zone_9\feature_importance_classifier.csv
+[i] Saved figure : ecozone_results\zone_9\feature_importance_classifier.png
+[i] Feature importance ranking written: ecozone_results\zone_9\feature_importance_regressor.csv
+[i] Saved figure : ecozone_results\zone_9\feature_importance_regressor.png
+[i] Saved figure : ecozone_results\zone_9\shap_summary_classifier.png
+[i] GIS overlay requested → ecozone_results\zone_9\gis_overlay_base.png using 'None'
+[✓] GIS overlay actually saved → ecozone_results\zone_9\gis_overlay_base.png
+[✓] Pretty geo overlay saved → ecozone_results\zone_9/gis_overlay_base.png
+[i] GIS overlay requested → ecozone_results\zone_9\gis_risk_heatmap.png using 'shap_risk'
+[✓] GIS overlay actually saved → ecozone_results\zone_9\gis_risk_heatmap.png
+[✓] SHAP risk heatmap saved → ecozone_results\zone_9/gis_risk_heatmap.png
+[i] Saved zone map: ecozone_results\zone_9\zone_map.png
+[i] Generating zone report: ecozone_results\zone_9
+[i] Report written: ecozone_results\zone_9\report.html
+[i] ---> Running zone 10 sequentially
+
+=== 🔥 TRAINING ECOZONE 10 | 92297 samples ===
+[i] Created output directory: ecozone_results\zone_10
+[✓] Balancing applied using: SMOTEENN
+[i] Train/Test shapes: (73837, 12) (18460, 12)
+
+[✔] Base classifier = LightGBM only. Other models will be tried while Optimising using Optuna
+
+[OPTUNA] Search candidates = ['rf', 'xgb', 'lgb', 'cat']
+[OPTUNA] DL enabled: True
+[OPTUNA] running tuning... patience=5
+  [OPTUNA] Trial 0: NEW BEST rf 0.4892
+  [OPTUNA] Trial 1: NEW BEST xgb 0.6679
+[i] Saved figure : ecozone_results\zone_10\roc_curve.png
+[i] Saved figure : ecozone_results\zone_10\classifier_curve.png
+[i] Saved figure : ecozone_results\zone_10\confusion_matrix.png
+[!] SMOGN failed — fallback to original: redefine phi relevance function: all points are 0
+[i] Feature importance ranking written: ecozone_results\zone_10\feature_importance_classifier.csv
+[i] Saved figure : ecozone_results\zone_10\feature_importance_classifier.png
+[i] Feature importance ranking written: ecozone_results\zone_10\feature_importance_regressor.csv
+[i] Saved figure : ecozone_results\zone_10\feature_importance_regressor.png
+[!] TreeExplainer failed, falling back to approximate SHAP: could not convert string to float: '[5.07293E-1]'
+[i] Saved figure : ecozone_results\zone_10\shap_summary_classifier.png
+[i] GIS overlay requested → ecozone_results\zone_10\gis_overlay_base.png using 'None'
+[✓] GIS overlay actually saved → ecozone_results\zone_10\gis_overlay_base.png
+[✓] Pretty geo overlay saved → ecozone_results\zone_10/gis_overlay_base.png
+[!] GIS SHAP mapping failed: could not convert string to float: '[5.07293E-1]'
+[i] Saved zone map: ecozone_results\zone_10\zone_map.png
+[!] Narrative insight generation failed: could not convert string to float: '[5.07293E-1]'
+[i] Generating zone report: ecozone_results\zone_10
+[i] Report written: ecozone_results\zone_10\report.html
+[i] ---> Running zone 11 sequentially
+
+=== 🔥 TRAINING ECOZONE 11 | 93482 samples ===
+[i] Created output directory: ecozone_results\zone_11
+[✓] Balancing applied using: SMOTEENN
+[i] Train/Test shapes: (74785, 12) (18697, 12)
+
+[✔] Base classifier = LightGBM only. Other models will be tried while Optimising using Optuna
+
+[OPTUNA] Search candidates = ['rf', 'xgb', 'lgb', 'cat']
+[OPTUNA] DL enabled: True
+[OPTUNA] running tuning... patience=5
+  [OPTUNA] Trial 0: NEW BEST rf 0.5443
+  [OPTUNA] Trial 2: NEW BEST cat 0.5472
+[i] Saved figure : ecozone_results\zone_11\roc_curve.png
+[i] Saved figure : ecozone_results\zone_11\classifier_curve.png
+[i] Saved figure : ecozone_results\zone_11\confusion_matrix.png
+[!] SMOGN failed — fallback to original: redefine phi relevance function: all points are 0
+[i] Feature importance ranking written: ecozone_results\zone_11\feature_importance_classifier.csv
+[i] Saved figure : ecozone_results\zone_11\feature_importance_classifier.png
+[i] Feature importance ranking written: ecozone_results\zone_11\feature_importance_regressor.csv
+[i] Saved figure : ecozone_results\zone_11\feature_importance_regressor.png
+[i] Saved figure : ecozone_results\zone_11\shap_summary_classifier.png
+[i] GIS overlay requested → ecozone_results\zone_11\gis_overlay_base.png using 'None'
+[✓] GIS overlay actually saved → ecozone_results\zone_11\gis_overlay_base.png
+[✓] Pretty geo overlay saved → ecozone_results\zone_11/gis_overlay_base.png
+[i] GIS overlay requested → ecozone_results\zone_11\gis_risk_heatmap.png using 'shap_risk'
+[✓] GIS overlay actually saved → ecozone_results\zone_11\gis_risk_heatmap.png
+[✓] SHAP risk heatmap saved → ecozone_results\zone_11/gis_risk_heatmap.png
+[i] Saved zone map: ecozone_results\zone_11\zone_map.png
+[i] Generating zone report: ecozone_results\zone_11
+[i] Report written: ecozone_results\zone_11\report.html
+[i] Updating Global Artifacts (Router, Registry, Reports)...
+[i] Training ecozone KNN router …
+[i] Building ULTIMATE global performance reports...
+[i] Generating metric range boxplots...
+[i] Saved figure : ecozone_results\global\global_metric_ranges.png
+[i] Generating meta-correlation heatmap...
+[i] Saved figure : ecozone_results\global\meta_correlation_matrix.png
+[i] Saved figure : ecozone_results\global\samples_vs_performance.png
+[i] Saved figure : ecozone_results\global\global_prediction_dist.png
+[i] Saved figure : ecozone_results\global\spatial_performance_map.png
+[i] Saved figure : ecozone_results\global\global_confusion_matrix.png
+[i] Writing global index page...
+[i] DONE Global reporting.
+
+[✓] Pipeline completed successfully.
